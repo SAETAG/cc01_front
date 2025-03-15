@@ -22,7 +22,7 @@ export default function RPGTitleScreen() {
   useEffect(() => {
     setIsLoaded(true);
     const objects: FloatingObject[] = Array.from({ length: 25 }).map(() => {
-      const objectIcons = ["✨", "🍃", "💫", "⭐", "🌟", "💎", "🔮", "🪙", "🍂", "❇️"];
+      const objectIcons = ["✨", "👗", "", "👙", "🌟", "💎", "👖", "🧦", "🧥", "👔"];
       return {
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
