@@ -83,7 +83,7 @@ export default function RPGTitleScreen() {
         </h1>
 
         {/* Subtitle with Japanese characters */}
-        <div className="text-white text-xl md:text-2xl mb-16 opacity-90">これは、あなたが自分らしいクローゼットを取り戻すまでの、物語。</div>
+        <div className="text-white text-xl md:text-2xl mb-16 opacity-90">あなたとクローゼットの物語。</div>
 
         {/* Menu buttons */}
         <div className="flex flex-col gap-4 items-center">
