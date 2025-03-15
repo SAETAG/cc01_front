@@ -3,14 +3,25 @@
 import { useState, useEffect } from "react";
 import Button from "@/components/ui/button";
 
+interface FloatingObject {
+  left: string;
+  top: string;
+  fontSize: string;
+  opacity: number;
+  animationDuration: string;
+  animationDelay: string;
+  transform: string;
+  icon: string;
+}
+
 export default function RPGTitleScreen() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
-  const [floatingObjects, setFloatingObjects] = useState<any[]>([]);
+  const [floatingObjects, setFloatingObjects] = useState<FloatingObject[]>([]);
 
   useEffect(() => {
     setIsLoaded(true);
-    const objects = Array.from({ length: 25 }).map(() => {
+    const objects: FloatingObject[] = Array.from({ length: 25 }).map(() => {
       const objectIcons = ["✨", "🍃", "💫", "⭐", "🌟", "💎", "🔮", "🪙", "🍂", "❇️"];
       return {
         left: `${Math.random() * 100}%`,
@@ -72,7 +83,7 @@ export default function RPGTitleScreen() {
         </h1>
 
         {/* Subtitle with Japanese characters */}
-        <div className="text-white text-xl md:text-2xl mb-16 opacity-90">あなたらしいクローゼットを見つける物語</div>
+        <div className="text-white text-xl md:text-2xl mb-16 opacity-90">冒険の物語</div>
 
         {/* Menu buttons */}
         <div className="flex flex-col gap-4 items-center">
