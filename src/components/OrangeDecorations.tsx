@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 
 interface Decoration {
@@ -11,11 +13,12 @@ interface Decoration {
 
 interface OrangeDecorationsProps {
   count?: number
+  className?: string
 }
 
 const decorativeElements = ["❤️", "✨", "💫", "💕", "⭐", "💖", "🌟"]
 
-export default function OrangeDecorations({ count = 30 }: OrangeDecorationsProps) {
+export default function OrangeDecorations({ count = 30, className = "" }: OrangeDecorationsProps) {
   const [decorations, setDecorations] = useState<Decoration[]>([])
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function OrangeDecorations({ count = 30 }: OrangeDecorationsProps
   }, [count])
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       {decorations.map((deco, i) => (
         <div
           key={`deco-${i}`}
@@ -52,3 +55,4 @@ export default function OrangeDecorations({ count = 30 }: OrangeDecorationsProps
     </div>
   )
 }
+

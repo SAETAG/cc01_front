@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 
 interface Particle {
@@ -9,9 +11,10 @@ interface Particle {
 
 interface BackgroundParticlesProps {
   count?: number
+  className?: string
 }
 
-export default function BackgroundParticles({ count = 50 }: BackgroundParticlesProps) {
+export default function BackgroundParticles({ count = 50, className = "" }: BackgroundParticlesProps) {
   const [particles, setParticles] = useState<Particle[]>([])
 
   useEffect(() => {
@@ -25,7 +28,7 @@ export default function BackgroundParticles({ count = 50 }: BackgroundParticlesP
   }, [count])
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       {particles.map((p, i) => (
         <div
           key={i}
@@ -41,3 +44,4 @@ export default function BackgroundParticles({ count = 50 }: BackgroundParticlesP
     </div>
   )
 }
+
