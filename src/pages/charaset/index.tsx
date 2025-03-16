@@ -21,6 +21,83 @@ type RewardType =
 // ステップの型定義
 type SetupStep = "job" | "boss" | "reward" | "confirm"
 
+// 背景の星コンポーネント（クライアントマウント後に乱数生成）
+function RandomStars() {
+  const [stars, setStars] = useState<
+    { left: number; top: number; opacity: number; duration: number }[]
+  >([])
+
+  useEffect(() => {
+    const newStars = Array.from({ length: 50 }).map(() => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      opacity: Math.random() * 0.7,
+      duration: Math.random() * 5 + 3, // 3～8秒
+    }))
+    setStars(newStars)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {stars.map((star, i) => (
+        <div
+          key={i}
+          className="absolute w-1 h-1 bg-white rounded-full"
+          style={{
+            left: `${star.left}%`,
+            top: `${star.top}%`,
+            opacity: star.opacity,
+            animation: `twinkle ${star.duration}s infinite alternate`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// 落下装飾コンポーネント
+function FallingDecorations() {
+  const [decorations, setDecorations] = useState<
+    { element: string; left: number; size: number; duration: number; delay: number; opacity: number }[]
+  >([])
+
+  useEffect(() => {
+    const decorativeElements = ["✨", "💫", "⭐", "🌟", "💎", "🔮"]
+    const newDecorations = Array.from({ length: 20 }).map(() => {
+      const element =
+        decorativeElements[Math.floor(Math.random() * decorativeElements.length)]
+      const size = Math.random() * 1.5 + 1 // 1～2.5rem
+      const duration = Math.random() * 10 + 15 // 15～25秒
+      const delay = Math.random() * 10 // 0～10秒
+      const left = Math.random() * 100
+      const opacity = Math.random() * 0.3 + 0.7
+      return { element, left, size, duration, delay, opacity }
+    })
+    setDecorations(newDecorations)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {decorations.map((deco, i) => (
+        <div
+          key={`deco-${i}`}
+          className="absolute animate-falling"
+          style={{
+            left: `${deco.left}%`,
+            top: `-50px`,
+            fontSize: `${deco.size}rem`,
+            opacity: deco.opacity,
+            animationDuration: `${deco.duration}s`,
+            animationDelay: `${deco.delay}s`,
+          }}
+        >
+          {deco.element}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function CharacterSetup() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<SetupStep>("job")
@@ -33,16 +110,15 @@ export default function CharacterSetup() {
   // BGM用のAudio要素の参照
   const bgmRef = useRef<HTMLAudioElement | null>(null)
 
-  // BGMの初期化と再生部分を修正
+  // BGMの初期化と再生
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        // オーディオファイルのパスを修正（publicフォルダ直下にあると仮定）
-        bgmRef.current = new Audio("/storysetting.mp3")
+        // オーディオファイルのパスを public/sounds 配下に変更
+        bgmRef.current = new Audio("/sounds/storysetting.mp3")
         bgmRef.current.loop = true
         bgmRef.current.volume = 0.5
 
-        // オーディオの読み込みエラーを検知
         bgmRef.current.addEventListener("error", (e) => {
           console.error("BGMの読み込みに失敗しました:", e)
         })
@@ -52,7 +128,6 @@ export default function CharacterSetup() {
           if (bgmRef.current) {
             bgmRef.current.play().catch((e) => {
               console.error("BGMの再生に失敗しました:", e)
-              // フォールバックとして無音で続行
               console.log("BGMなしで続行します")
             })
           }
@@ -88,8 +163,6 @@ export default function CharacterSetup() {
   // 次のステップに進む
   const goToNextStep = () => {
     setIsTransitioning(true)
-
-    // 効果音を再生（実際のプロジェクトでは実装）
     console.log("効果音再生: 選択完了")
 
     setTimeout(() => {
@@ -103,10 +176,8 @@ export default function CharacterSetup() {
         case "reward":
           setCurrentStep("confirm")
           break
-        // goToNextStep関数内のBGM停止部分も修正
-        // "confirm"ケース内のBGM停止部分を以下に置き換え
         case "confirm":
-          // BGMを停止（エラーハンドリング追加）
+          // BGM停止（フェードアウト処理）
           if (bgmRef.current) {
             try {
               const fadeOut = setInterval(() => {
@@ -118,13 +189,11 @@ export default function CharacterSetup() {
                     bgmRef.current.pause()
                     bgmRef.current = null
                   }
-                  // ダッシュボードへ遷移
                   router.push("/dashboard")
                 }
               }, 100)
             } catch (error) {
               console.error("BGM停止中にエラーが発生しました:", error)
-              // エラーが発生しても遷移は実行
               router.push("/dashboard")
             }
           } else {
@@ -138,9 +207,10 @@ export default function CharacterSetup() {
 
   // 選択肢を保存する（モック実装）
   const saveSelection = (step: SetupStep) => {
-    console.log(`${step}の選択を保存: `, step === "job" ? selectedJob : step === "boss" ? selectedBoss : selectedReward)
-
-    // 実際のプロジェクトではここでAPIを呼び出してDBに保存
+    console.log(
+      `${step}の選択を保存: `,
+      step === "job" ? selectedJob : step === "boss" ? selectedBoss : selectedReward
+    )
   }
 
   // 次へボタンが有効かどうか
@@ -157,53 +227,13 @@ export default function CharacterSetup() {
     }
   }
 
-  // 装飾要素（星、キラキラなど）
-  const decorativeElements = ["✨", "💫", "⭐", "🌟", "💎", "🔮"]
-
   return (
     <div className="relative h-screen w-full overflow-hidden bg-gradient-to-b from-blue-950 to-blue-900 flex flex-col items-center justify-center">
-      {/* 背景の星や光の粒子効果 */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 50 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.7,
-              animation: `twinkle ${Math.random() * 5 + 3}s infinite alternate`,
-            }}
-          />
-        ))}
-      </div>
+      {/* 背景の星（クライアントマウント後のみ描画） */}
+      <RandomStars />
 
-      {/* 装飾要素（星、キラキラなど） */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => {
-          const element = decorativeElements[Math.floor(Math.random() * decorativeElements.length)]
-          const size = Math.random() * 1.5 + 1 // 1~2.5rem
-          const duration = Math.random() * 10 + 15 // 15~25秒
-          const delay = Math.random() * 10 // 0~10秒
-
-          return (
-            <div
-              key={`deco-${i}`}
-              className="absolute animate-falling"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `-50px`,
-                fontSize: `${size}rem`,
-                opacity: Math.random() * 0.3 + 0.7,
-                animationDuration: `${duration}s`,
-                animationDelay: `${delay}s`,
-              }}
-            >
-              {element}
-            </div>
-          )
-        })}
-      </div>
+      {/* 落下装飾 */}
+      <FallingDecorations />
 
       {/* ミュートボタン */}
       <div className="absolute top-6 right-6 z-50">
@@ -221,7 +251,7 @@ export default function CharacterSetup() {
       {/* メインコンテンツ */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-4">
         <AnimatePresence mode="wait">
-          {/* 牛の妖精キ���ラクター */}
+          {/* 牛の妖精キャラクター */}
           <motion.div
             key="fairy"
             className="mb-8 flex justify-center"
@@ -258,7 +288,9 @@ export default function CharacterSetup() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
-            className={`bg-blue-900/50 backdrop-blur-md rounded-lg p-6 border border-blue-400/20 shadow-xl ${isTransitioning ? "pointer-events-none" : ""}`}
+            className={`bg-blue-900/50 backdrop-blur-md rounded-lg p-6 border border-blue-400/20 shadow-xl ${
+              isTransitioning ? "pointer-events-none" : ""
+            }`}
           >
             {/* 職業選択 */}
             {currentStep === "job" && (
@@ -617,4 +649,3 @@ function RewardOption({
     </div>
   )
 }
-
