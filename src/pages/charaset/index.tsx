@@ -278,12 +278,12 @@ export default function CharacterSetup() {
               }}
               className="relative"
             >
-              <div className="w-32 h-32 md:w-40 md:h-40 bg-yellow-200 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
                 <Image
                   src="/images/cow-fairy.webp"
                   alt="モーちゃん"
-                  layout="fill"
-                  objectFit="cover"
+                  fill  // layout="fill" の代わり
+                  style={{ objectFit: "cover" }}
                 />
               </div>
               <div className="mt-2 text-center text-white font-medium">

@@ -60,6 +60,29 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     [isMuted, audioEnabled]
   )
 
+  // BGMの初期化と再生（audioEnabled が true のときに実行）
+  useEffect(() => {
+    if (typeof window !== "undefined" && audioEnabled) {
+      try {
+        bgmRef.current = new Audio("/sounds/prologue.mp3")
+        bgmRef.current.loop = true
+        bgmRef.current.volume = 0.5
+        bgmRef.current.muted = isMuted
+        bgmRef.current.play().catch((e) => {
+          console.error("BGMの再生に失敗しました:", e)
+        })
+      } catch (error) {
+        console.error("BGMの初期化に失敗しました:", error)
+      }
+    }
+    return () => {
+      if (bgmRef.current) {
+        bgmRef.current.pause()
+        bgmRef.current = null
+      }
+    }
+  }, [audioEnabled, isMuted])
+
   // シーンの自動進行管理
   useEffect(() => {
     if (currentScene === "start") return
@@ -140,7 +163,10 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     }
     const currentText = getCurrentText()
 
-    if (["narration1", "narration2", "npc", "adventure"].includes(currentScene) && textProgress < currentText.length) {
+    if (
+      ["narration1", "narration2", "npc", "adventure"].includes(currentScene) &&
+      textProgress < currentText.length
+    ) {
       setIsTyping(true)
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
       typingTimerRef.current = setTimeout(() => {
@@ -215,7 +241,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     })
   }, [])
 
-  // プロローグ開始
+  // プロローグ開始（ボタン押下で実行）
   const startPrologue = () => {
     setAudioEnabled(true)
     setCurrentScene("prologue")
@@ -370,16 +396,19 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
                   ease: "easeInOut",
                 }}
               >
-                <div className="w-40 h-40 bg-yellow-200 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
+                {/* 画像の親要素に relative を追加 */}
+                <div className="relative w-40 h-40 bg-yellow-200 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
                   <Image
                     src="/images/cow-fairy.webp"
-                    alt="牛の妖精"
+                    alt="片づけの妖精：モーちゃん"
                     layout="fill"
                     objectFit="cover"
                   />
                 </div>
                 <div className="mt-2 text-center text-white font-medium">
-                  <span className="bg-yellow-600/70 px-3 py-1 rounded-full text-sm">牛の妖精</span>
+                  <span className="bg-yellow-600/70 px-3 py-1 rounded-full text-sm">
+                    片づけの妖精：モーちゃん
+                  </span>
                 </div>
               </motion.div>
             </div>
