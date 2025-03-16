@@ -444,7 +444,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
             </p>
             {textProgress >= adventureText.length && (
               <motion.div
-                className="absolute inset-0 bg-gradient-radial from-yellow-300/30 to-transparent"
+                className="pointer-events-none absolute inset-0 bg-gradient-radial from-yellow-300/30 to-transparent"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 2 }}
