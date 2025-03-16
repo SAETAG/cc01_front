@@ -10,15 +10,7 @@ import OrangeDecorations from "@/components/OrangeDecorations"
 import { useRouter } from "next/navigation"
 
 // シーンの種類を定義
-type SceneType =
-  | "start"
-  | "prologue"
-  | "narration1"
-  | "narration2"
-  | "npc"
-  | "adventure"
-  | "complete"
-  | "end"
+type SceneType = "start" | "prologue" | "narration1" | "narration2" | "npc" | "adventure" | "complete" | "end"
 
 export default function PrologueScene({ onComplete }: { onComplete?: () => void }) {
   const router = useRouter()
@@ -57,7 +49,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         console.log(`効果音の再生に失敗: ${soundName}`)
       }
     },
-    [isMuted, audioEnabled]
+    [isMuted, audioEnabled],
   )
 
   // BGMの初期化と再生（audioEnabled が true のときに実行）
@@ -93,41 +85,25 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         await delay(5000)
         playSound("transition")
         setCurrentScene("narration1")
-      } else if (
-        currentScene === "narration1" &&
-        textProgress >= narration1Text.length &&
-        !isTyping
-      ) {
+      } else if (currentScene === "narration1" && textProgress >= narration1Text.length && !isTyping) {
         await delay(2000)
         playSound("transition")
         playSound("narration2")
         setTextProgress(0)
         setCurrentScene("narration2")
-      } else if (
-        currentScene === "narration2" &&
-        textProgress >= narration2Text.length &&
-        !isTyping
-      ) {
+      } else if (currentScene === "narration2" && textProgress >= narration2Text.length && !isTyping) {
         await delay(2000)
         playSound("transition")
         playSound("npc")
         setTextProgress(0)
         setCurrentScene("npc")
-      } else if (
-        currentScene === "npc" &&
-        textProgress >= npcDialogue.length &&
-        !isTyping
-      ) {
+      } else if (currentScene === "npc" && textProgress >= npcDialogue.length && !isTyping) {
         await delay(2000)
         playSound("transition")
         playSound("adventure")
         setTextProgress(0)
         setCurrentScene("adventure")
-      } else if (
-        currentScene === "adventure" &&
-        textProgress >= adventureText.length &&
-        !isTyping
-      ) {
+      } else if (currentScene === "adventure" && textProgress >= adventureText.length && !isTyping) {
         await delay(3000)
         setCurrentScene("complete")
       }
@@ -163,10 +139,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     }
     const currentText = getCurrentText()
 
-    if (
-      ["narration1", "narration2", "npc", "adventure"].includes(currentScene) &&
-      textProgress < currentText.length
-    ) {
+    if (["narration1", "narration2", "npc", "adventure"].includes(currentScene) && textProgress < currentText.length) {
       setIsTyping(true)
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
       typingTimerRef.current = setTimeout(() => {
@@ -193,10 +166,10 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         currentScene === "narration1"
           ? narration1Text
           : currentScene === "narration2"
-          ? narration2Text
-          : currentScene === "npc"
-          ? npcDialogue
-          : adventureText
+            ? narration2Text
+            : currentScene === "npc"
+              ? npcDialogue
+              : adventureText
       setTextProgress(currentText.length)
       return
     }
@@ -282,9 +255,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
           <h1 className="text-4xl md:text-6xl font-bold text-yellow-300 tracking-wider mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
             乱れしクローゼット王国
           </h1>
-          <p className="text-white mb-8 text-lg">
-            物語を始めるには下のボタンをクリックしてください
-          </p>
+          <p className="text-white mb-8 text-lg">物語を始めるには下のボタンをクリックしてください</p>
           <button
             onClick={startPrologue}
             className="bg-yellow-600 hover:bg-yellow-500 text-white px-8 py-6 rounded-full text-lg shadow-lg"
@@ -292,9 +263,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
             <Play className="mr-2 h-5 w-5" />
             物語を始める
           </button>
-          <p className="text-xs text-gray-300 mt-2">
-            以降、効果音が鳴ります（音楽：魔王魂）
-          </p>
+          <p className="text-xs text-gray-300 mt-2">以降、効果音が鳴ります（音楽：魔王魂）</p>
         </motion.div>
       )}
 
@@ -400,17 +369,10 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
               >
                 {/* 画像の親要素に relative を追加 */}
                 <div className="relative w-40 h-40 bg-yellow-200 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
-                  <Image
-                    src="/images/cow-fairy.webp"
-                    alt="片づけの妖精：モーちゃん"
-                    layout="fill"
-                    objectFit="cover"
-                  />
+                  <Image src="/images/cow-fairy.webp" alt="片づけの妖精：モーちゃん" layout="fill" objectFit="cover" />
                 </div>
                 <div className="mt-2 text-center text-white font-medium">
-                  <span className="bg-yellow-600/70 px-3 py-1 rounded-full text-sm">
-                    片づけの妖精：モーちゃん
-                  </span>
+                  <span className="bg-yellow-600/70 px-3 py-1 rounded-full text-sm">片づけの妖精：モーちゃん</span>
                 </div>
               </motion.div>
             </div>
@@ -458,7 +420,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         {currentScene === "complete" && (
           <motion.div
             key="complete"
-            className="text-center"
+            className="text-center relative"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -488,10 +450,16 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
                   router.push("/charaset")
                 }
               }}
-              className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg"
+              className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg relative z-10"
             >
               冒険の準備を始める <ArrowRight className="ml-2 h-5 w-5" />
             </button>
+            <motion.div
+              className="pointer-events-none absolute inset-0 bg-gradient-radial from-yellow-300/30 to-transparent"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 2 }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -525,3 +493,4 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     </div>
   )
 }
+
