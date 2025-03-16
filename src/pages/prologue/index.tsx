@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { SkipForward, Volume2, VolumeX, Play, ArrowRight } from "lucide-react"
 import { delay } from "@/lib/utils"
 import BackgroundParticles from "@/components/BackgroundParticles"
@@ -34,7 +35,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     "しかし、ある日、突如として現れた『混沌の呪い』が王国に暗い影を落としました。\n棚は乱れ、衣装は迷宮のごとく入り組み、かつての秩序は音を立てて崩れ去っていきました。"
 
   const npcDialogue =
-    "勇者よ、あなたにのみ託された使命がある。\n散らかり果てた王国に再び秩序をもたらし、失われた美しさを取り戻すのです。\n『片方見つからないソックスライム』、そして『リバウンドラゴン』…彼らを打ち倒し、再び平和と輝きに満ちたクローゼットを取り戻すのです！"
+    "勇者よ、あなたにのみ託された使命がある。\n散らかり果てた王国に再び秩序をもたらし、失われた美しさを取り戻すのです。\n『片方見つからないソックスライム』、『リバウンドラゴン』…彼らを打ち倒し、再び平和と輝きに満ちたクローゼットを取り戻すのです！"
 
   const adventureText =
     "冒険の始まり：\n\nここからあなたは、自らの『職業』を選び、断捨離の剣士、空間デザインの魔法使い、または時短の錬金術師として、各エリアに潜む混沌を一掃するための旅に出ます。\n初めは小さなクエストから始まり、ひとつひとつの達成があなたを強くします。\nそしてクローゼット王国が再び輝きを取り戻すまさにその時、あなたは国を統治する偉大な王になるのです。\n\nさぁ選ばれし勇者よ、行ってらっしゃい！"
@@ -219,6 +220,24 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     setAudioEnabled(true)
     setCurrentScene("prologue")
   }
+
+  // BGMのフェードアウト
+  const fadeOutBgm = useCallback(() => {
+    if (bgmRef.current) {
+      const fadeOut = setInterval(() => {
+        if (bgmRef.current && bgmRef.current.volume > 0.05) {
+          bgmRef.current.volume -= 0.05
+        } else {
+          clearInterval(fadeOut)
+          if (bgmRef.current) {
+            bgmRef.current.pause()
+            bgmRef.current = null
+          }
+        }
+      }, 100)
+    }
+    if (onComplete) onComplete()
+  }, [onComplete])
 
   // 背景色設定
   const getBackgroundColor = () => {
@@ -418,46 +437,21 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         )}
 
         {currentScene === "complete" && (
-          <motion.div
-            key="complete"
-            className="text-center w-full max-w-md mx-auto px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
+          <div className="text-center w-full max-w-md mx-auto px-4 relative z-50">
             <h1 className="text-4xl md:text-6xl font-bold text-yellow-300 tracking-wider mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
               プロローグ完了
             </h1>
             <p className="text-white mb-8 text-lg">冒険の準備を始めましょう</p>
-            <div className="relative z-50">
-              <button
-                onClick={() => {
-                  console.log("ボタンがクリックされました")
-                  if (bgmRef.current) {
-                    const fadeOut = setInterval(() => {
-                      if (bgmRef.current && bgmRef.current.volume > 0.05) {
-                        bgmRef.current.volume -= 0.05
-                      } else {
-                        clearInterval(fadeOut)
-                        if (bgmRef.current) {
-                          bgmRef.current.pause()
-                          bgmRef.current = null
-                        }
-                        if (onComplete) onComplete()
-                        router.push("/charaset")
-                      }
-                    }, 100)
-                  } else {
-                    if (onComplete) onComplete()
-                    router.push("/charaset")
-                  }
-                }}
-                className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg touch-manipulation"
-              >
-                冒険の準備を始める <ArrowRight className="inline-block ml-2 h-5 w-5" />
-              </button>
-            </div>
-          </motion.div>
+
+            {/* 通常のリンクに変更 */}
+            <Link
+              href="/charaset"
+              onClick={fadeOutBgm}
+              className="inline-block bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg"
+            >
+              冒険の準備を始める <ArrowRight className="inline-block ml-2 h-5 w-5" />
+            </Link>
+          </div>
         )}
       </AnimatePresence>
 
