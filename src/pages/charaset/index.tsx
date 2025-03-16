@@ -27,9 +27,7 @@ type SetupStep = "job" | "boss" | "reward" | "confirm"
  * クライアント側で乱数生成するため、SSR時との不整合を防止
  */
 function RandomStars() {
-  const [stars, setStars] = useState<
-    { left: number; top: number; opacity: number; duration: number }[]
-  >([])
+  const [stars, setStars] = useState<{ left: number; top: number; opacity: number; duration: number }[]>([])
 
   useEffect(() => {
     const newStars = Array.from({ length: 50 }).map(() => ({
@@ -42,7 +40,7 @@ function RandomStars() {
   }, [])
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="fixed inset-0 overflow-hidden">
       {stars.map((star, i) => (
         <div
           key={i}
@@ -71,8 +69,7 @@ function FallingDecorations() {
   useEffect(() => {
     const decorativeElements = ["✨", "💫", "⭐", "🌟", "💎", "🔮"]
     const newDecorations = Array.from({ length: 20 }).map(() => {
-      const element =
-        decorativeElements[Math.floor(Math.random() * decorativeElements.length)]
+      const element = decorativeElements[Math.floor(Math.random() * decorativeElements.length)]
       const size = Math.random() * 1.5 + 1 // 1～2.5rem
       const duration = Math.random() * 10 + 15 // 15～25秒
       const delay = Math.random() * 10 // 0～10秒
@@ -84,7 +81,7 @@ function FallingDecorations() {
   }, [])
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {decorations.map((deco, i) => (
         <div
           key={`deco-${i}`}
@@ -208,15 +205,15 @@ export default function CharacterSetup() {
           break
       }
       setIsTransitioning(false)
+
+      // スクロールを一番上に戻す
+      window.scrollTo(0, 0)
     }, 500)
   }, [currentStep, router])
 
   // 選択肢を保存する（モック実装）
   const saveSelection = (step: SetupStep) => {
-    console.log(
-      `${step}の選択を保存: `,
-      step === "job" ? selectedJob : step === "boss" ? selectedBoss : selectedReward
-    )
+    console.log(`${step}の選択を保存: `, step === "job" ? selectedJob : step === "boss" ? selectedBoss : selectedReward)
   }
 
   // 次へボタンの有効性判定
@@ -234,7 +231,7 @@ export default function CharacterSetup() {
   }
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-gradient-to-b from-blue-950 to-blue-900 flex flex-col items-center justify-center">
+    <div className="min-h-screen w-full bg-gradient-to-b from-blue-950 to-blue-900 overflow-y-auto pb-10">
       {/* 背景の星 */}
       <RandomStars />
 
@@ -242,7 +239,7 @@ export default function CharacterSetup() {
       <FallingDecorations />
 
       {/* ミュートボタン */}
-      <div className="absolute top-6 right-6 z-50">
+      <div className="fixed top-6 right-6 z-50">
         <Button
           variant="ghost"
           size="sm"
@@ -255,7 +252,7 @@ export default function CharacterSetup() {
       </div>
 
       {/* メインコンテンツ */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-4">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pt-10">
         <AnimatePresence mode="wait">
           {/* 牛の妖精キャラクター */}
           <motion.div
@@ -278,13 +275,8 @@ export default function CharacterSetup() {
               }}
               className="relative"
             >
-              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
-                <Image
-                  src="/images/cow-fairy.webp"
-                  alt="モーちゃん"
-                  fill  // layout="fill" の代わり
-                  style={{ objectFit: "cover" }}
-                />
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
+                <Image src="/images/cow-fairy.webp" alt="モーちゃん" fill style={{ objectFit: "cover" }} />
               </div>
               <div className="mt-2 text-center text-white font-medium">
                 <span className="bg-yellow-600/70 px-3 py-1 rounded-full text-sm">モーちゃん</span>
@@ -299,21 +291,21 @@ export default function CharacterSetup() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
-            className={`bg-blue-900/50 backdrop-blur-md rounded-lg p-6 border border-blue-400/20 shadow-xl ${
+            className={`bg-blue-900/50 backdrop-blur-md rounded-lg p-4 sm:p-6 border border-blue-400/20 shadow-xl ${
               isTransitioning ? "pointer-events-none" : ""
             }`}
           >
             {/* 職業選択 */}
             {currentStep === "job" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <div className="space-y-4 sm:space-y-6">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-4 sm:mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                   勇者よ、あなたはどのタイプの勇者を目指すか？
                 </h2>
 
                 <RadioGroup
                   value={selectedJob || ""}
                   onValueChange={(value) => setSelectedJob(value as JobType)}
-                  className="space-y-4"
+                  className="space-y-3 sm:space-y-4"
                 >
                   <JobOption
                     value="断捨離の剣士"
@@ -340,16 +332,16 @@ export default function CharacterSetup() {
                   />
                 </RadioGroup>
 
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-6 sm:mt-8">
                   <Button
                     onClick={() => {
                       saveSelection("job")
                       goToNextStep()
                     }}
                     disabled={!isNextButtonEnabled()}
-                    className="bg-yellow-600 hover:bg-yellow-500 text-white px-8 py-2 rounded-full text-lg shadow-lg"
+                    className="bg-yellow-600 hover:bg-yellow-500 text-white px-6 sm:px-8 py-2 rounded-full text-base sm:text-lg shadow-lg"
                   >
-                    次へ進む <ArrowRight className="ml-2 h-5 w-5" />
+                    次へ進む <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </div>
               </div>
@@ -357,15 +349,15 @@ export default function CharacterSetup() {
 
             {/* ボス選択 */}
             {currentStep === "boss" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <div className="space-y-4 sm:space-y-6">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-4 sm:mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                   今のクローゼットの問題は何かな？
                 </h2>
 
                 <RadioGroup
                   value={selectedBoss || ""}
                   onValueChange={(value) => setSelectedBoss(value as BossType)}
-                  className="space-y-4"
+                  className="space-y-3 sm:space-y-4"
                 >
                   <BossOption
                     value="リバウンドラゴン"
@@ -389,16 +381,16 @@ export default function CharacterSetup() {
                   />
                 </RadioGroup>
 
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-6 sm:mt-8">
                   <Button
                     onClick={() => {
                       saveSelection("boss")
                       goToNextStep()
                     }}
                     disabled={!isNextButtonEnabled()}
-                    className="bg-yellow-600 hover:bg-yellow-500 text-white px-8 py-2 rounded-full text-lg shadow-lg"
+                    className="bg-yellow-600 hover:bg-yellow-500 text-white px-6 sm:px-8 py-2 rounded-full text-base sm:text-lg shadow-lg"
                   >
-                    次へ進む <ArrowRight className="ml-2 h-5 w-5" />
+                    次へ進む <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </div>
               </div>
@@ -406,15 +398,15 @@ export default function CharacterSetup() {
 
             {/* 報酬選択 */}
             {currentStep === "reward" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <div className="space-y-4 sm:space-y-6">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-4 sm:mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                   どんなクローゼットにしたい？
                 </h2>
 
                 <RadioGroup
                   value={selectedReward || ""}
                   onValueChange={(value) => setSelectedReward(value as RewardType)}
-                  className="space-y-4"
+                  className="space-y-3 sm:space-y-4"
                 >
                   <RewardOption
                     value="透視の魔法がかかったクローゼット"
@@ -438,16 +430,16 @@ export default function CharacterSetup() {
                   />
                 </RadioGroup>
 
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-6 sm:mt-8">
                   <Button
                     onClick={() => {
                       saveSelection("reward")
                       goToNextStep()
                     }}
                     disabled={!isNextButtonEnabled()}
-                    className="bg-yellow-600 hover:bg-yellow-500 text-white px-8 py-2 rounded-full text-lg shadow-lg"
+                    className="bg-yellow-600 hover:bg-yellow-500 text-white px-6 sm:px-8 py-2 rounded-full text-base sm:text-lg shadow-lg"
                   >
-                    次へ進む <ArrowRight className="ml-2 h-5 w-5" />
+                    次へ進む <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </div>
               </div>
@@ -455,40 +447,42 @@ export default function CharacterSetup() {
 
             {/* 最終確認 */}
             {currentStep === "confirm" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <div className="space-y-4 sm:space-y-6">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-300 text-center mb-4 sm:mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                   冒険の準備が整いました！
                 </h2>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <Card className="bg-blue-800/50 border-blue-400/30">
-                    <CardContent className="p-4">
-                      <h3 className="text-lg font-semibold text-yellow-200 mb-2">あなたの職業</h3>
-                      <p className="text-white text-xl">{selectedJob}</p>
+                    <CardContent className="p-3 sm:p-4">
+                      <h3 className="text-base sm:text-lg font-semibold text-yellow-200 mb-1 sm:mb-2">あなたの職業</h3>
+                      <p className="text-white text-lg sm:text-xl">{selectedJob}</p>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-blue-800/50 border-blue-400/30">
-                    <CardContent className="p-4">
-                      <h3 className="text-lg font-semibold text-yellow-200 mb-2">倒すべきボス</h3>
-                      <p className="text-white text-xl">{selectedBoss}</p>
+                    <CardContent className="p-3 sm:p-4">
+                      <h3 className="text-base sm:text-lg font-semibold text-yellow-200 mb-1 sm:mb-2">倒すべきボス</h3>
+                      <p className="text-white text-lg sm:text-xl">{selectedBoss}</p>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-blue-800/50 border-blue-400/30">
-                    <CardContent className="p-4">
-                      <h3 className="text-lg font-semibold text-yellow-200 mb-2">目指す最終報酬</h3>
-                      <p className="text-white text-xl">{selectedReward}</p>
+                    <CardContent className="p-3 sm:p-4">
+                      <h3 className="text-base sm:text-lg font-semibold text-yellow-200 mb-1 sm:mb-2">
+                        目指す最終報酬
+                      </h3>
+                      <p className="text-white text-lg sm:text-xl">{selectedReward}</p>
                     </CardContent>
                   </Card>
                 </div>
 
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-6 sm:mt-8">
                   <Button
                     onClick={goToNextStep}
-                    className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg"
+                    className="bg-green-600 hover:bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full text-base sm:text-lg shadow-lg"
                   >
-                    これでOK <Check className="ml-2 h-5 w-5" />
+                    これでOK <Check className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </div>
               </div>
@@ -540,7 +534,7 @@ function JobOption({
 }) {
   return (
     <div
-      className={`relative rounded-lg border-2 p-4 transition-all duration-300 ${
+      className={`relative rounded-lg border-2 p-3 sm:p-4 transition-all duration-300 ${
         isSelected
           ? "border-yellow-400 bg-blue-800/70 shadow-[0_0_15px_rgba(234,179,8,0.3)]"
           : "border-blue-400/30 bg-blue-800/30 hover:bg-blue-800/50"
@@ -551,19 +545,19 @@ function JobOption({
         <Label htmlFor={value} className="flex flex-1 cursor-pointer items-start gap-2">
           <div className="flex-1">
             <div className="flex justify-between">
-              <div className="text-lg font-semibold text-white">{title}</div>
+              <div className="text-base sm:text-lg font-semibold text-white">{title}</div>
               {isSelected && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-yellow-400 flex items-center justify-center"
                 >
-                  <Check className="h-4 w-4 text-blue-900" />
+                  <Check className="h-3 w-3 sm:h-4 sm:w-4 text-blue-900" />
                 </motion.div>
               )}
             </div>
-            <div className="text-xl font-bold text-purple-300 mt-1">{description}</div>
-            <div className="text-blue-100 mt-1">{subtext}</div>
+            <div className="text-lg sm:text-xl font-bold text-purple-300 mt-1">{description}</div>
+            <div className="text-sm sm:text-base text-blue-100 mt-1">{subtext}</div>
           </div>
         </Label>
       </div>
@@ -585,7 +579,7 @@ function BossOption({
 }) {
   return (
     <div
-      className={`relative rounded-lg border-2 p-4 transition-all duration-300 ${
+      className={`relative rounded-lg border-2 p-3 sm:p-4 transition-all duration-300 ${
         isSelected
           ? "border-yellow-400 bg-blue-800/70 shadow-[0_0_15px_rgba(234,179,8,0.3)]"
           : "border-blue-400/30 bg-blue-800/30 hover:bg-blue-800/50"
@@ -596,18 +590,18 @@ function BossOption({
         <Label htmlFor={value} className="flex flex-1 cursor-pointer items-start gap-2">
           <div className="flex-1">
             <div className="flex justify-between">
-              <div className="text-lg font-semibold text-white">{title}</div>
+              <div className="text-base sm:text-lg font-semibold text-white">{title}</div>
               {isSelected && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-yellow-400 flex items-center justify-center"
                 >
-                  <Check className="h-4 w-4 text-blue-900" />
+                  <Check className="h-3 w-3 sm:h-4 sm:w-4 text-blue-900" />
                 </motion.div>
               )}
             </div>
-            <div className="text-xl font-bold text-purple-300 mt-1">{description}</div>
+            <div className="text-lg sm:text-xl font-bold text-purple-300 mt-1">{description}</div>
           </div>
         </Label>
       </div>
@@ -629,7 +623,7 @@ function RewardOption({
 }) {
   return (
     <div
-      className={`relative rounded-lg border-2 p-4 transition-all duration-300 ${
+      className={`relative rounded-lg border-2 p-3 sm:p-4 transition-all duration-300 ${
         isSelected
           ? "border-yellow-400 bg-blue-800/70 shadow-[0_0_15px_rgba(234,179,8,0.3)]"
           : "border-blue-400/30 bg-blue-800/30 hover:bg-blue-800/50"
@@ -640,21 +634,22 @@ function RewardOption({
         <Label htmlFor={value} className="flex flex-1 cursor-pointer items-start gap-2">
           <div className="flex-1">
             <div className="flex justify-between">
-              <div className="text-lg font-semibold text-white">{title}</div>
+              <div className="text-base sm:text-lg font-semibold text-white">{title}</div>
               {isSelected && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-yellow-400 flex items-center justify-center"
                 >
-                  <Check className="h-4 w-4 text-blue-900" />
+                  <Check className="h-3 w-3 sm:h-4 sm:w-4 text-blue-900" />
                 </motion.div>
               )}
             </div>
-            <div className="text-xl font-bold text-purple-300 mt-1">{description}</div>
+            <div className="text-lg sm:text-xl font-bold text-purple-300 mt-1">{description}</div>
           </div>
         </Label>
       </div>
     </div>
   )
 }
+
