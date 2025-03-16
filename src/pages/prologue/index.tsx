@@ -379,10 +379,10 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
           >
-            <div className="relative mb-6 sm:mb-8 w-full flex justify-center">
+            <div className="relative mb-6 sm:mb-8 w-full flex flex-col items-center">
               <div className="pointer-events-none absolute inset-0 bg-blue-900/50 rounded-lg backdrop-blur-sm"></div>
               <motion.div
-                className="relative z-10 mt-4"
+                className="relative z-10 flex flex-col items-center justify-center"
                 animate={{
                   y: [0, -10, 0],
                   scale: [1, 1.02, 1],
