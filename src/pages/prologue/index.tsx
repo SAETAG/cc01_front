@@ -420,7 +420,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         {currentScene === "complete" && (
           <motion.div
             key="complete"
-            className="text-center relative"
+            className="text-center w-full max-w-md mx-auto px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -429,37 +429,34 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
               プロローグ完了
             </h1>
             <p className="text-white mb-8 text-lg">冒険の準備を始めましょう</p>
-            <button
-              onClick={() => {
-                if (bgmRef.current) {
-                  const fadeOut = setInterval(() => {
-                    if (bgmRef.current && bgmRef.current.volume > 0.05) {
-                      bgmRef.current.volume -= 0.05
-                    } else {
-                      clearInterval(fadeOut)
-                      if (bgmRef.current) {
-                        bgmRef.current.pause()
-                        bgmRef.current = null
+            <div className="relative z-50">
+              <button
+                onClick={() => {
+                  console.log("ボタンがクリックされました")
+                  if (bgmRef.current) {
+                    const fadeOut = setInterval(() => {
+                      if (bgmRef.current && bgmRef.current.volume > 0.05) {
+                        bgmRef.current.volume -= 0.05
+                      } else {
+                        clearInterval(fadeOut)
+                        if (bgmRef.current) {
+                          bgmRef.current.pause()
+                          bgmRef.current = null
+                        }
+                        if (onComplete) onComplete()
+                        router.push("/charaset")
                       }
-                      if (onComplete) onComplete()
-                      router.push("/charaset")
-                    }
-                  }, 100)
-                } else {
-                  if (onComplete) onComplete()
-                  router.push("/charaset")
-                }
-              }}
-              className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg relative z-10"
-            >
-              冒険の準備を始める <ArrowRight className="ml-2 h-5 w-5" />
-            </button>
-            <motion.div
-              className="pointer-events-none absolute inset-0 bg-gradient-radial from-yellow-300/30 to-transparent"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2 }}
-            />
+                    }, 100)
+                  } else {
+                    if (onComplete) onComplete()
+                    router.push("/charaset")
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full text-lg shadow-lg touch-manipulation"
+              >
+                冒険の準備を始める <ArrowRight className="inline-block ml-2 h-5 w-5" />
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
