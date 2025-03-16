@@ -8,13 +8,11 @@ import { SkipForward, Volume2, VolumeX, Play, ArrowRight } from "lucide-react"
 import { delay } from "@/lib/utils"
 import BackgroundParticles from "@/components/BackgroundParticles"
 import OrangeDecorations from "@/components/OrangeDecorations"
-import { useRouter } from "next/navigation"
 
 // シーンの種類を定義
 type SceneType = "start" | "prologue" | "narration1" | "narration2" | "npc" | "adventure" | "complete" | "end"
 
 export default function PrologueScene({ onComplete }: { onComplete?: () => void }) {
-  const router = useRouter()
   const [currentScene, setCurrentScene] = useState<SceneType>("start")
   const [textProgress, setTextProgress] = useState(0)
   const [isTyping, setIsTyping] = useState(false)
