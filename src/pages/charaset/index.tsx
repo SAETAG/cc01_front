@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -21,7 +22,10 @@ type RewardType =
 // ステップの型定義
 type SetupStep = "job" | "boss" | "reward" | "confirm"
 
-// 背景の星コンポーネント（クライアントマウント後に乱数生成）
+/**
+ * 背景の星コンポーネント
+ * クライアント側で乱数生成するため、SSR時との不整合を防止
+ */
 function RandomStars() {
   const [stars, setStars] = useState<
     { left: number; top: number; opacity: number; duration: number }[]
@@ -55,7 +59,10 @@ function RandomStars() {
   )
 }
 
-// 落下装飾コンポーネント
+/**
+ * 落下装飾コンポーネント
+ * 同様にクライアント側で乱数を生成してから表示
+ */
 function FallingDecorations() {
   const [decorations, setDecorations] = useState<
     { element: string; left: number; size: number; duration: number; delay: number; opacity: number }[]
@@ -114,7 +121,7 @@ export default function CharacterSetup() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        // オーディオファイルのパスを public/sounds 配下に変更
+        // public/sounds 配下のファイルを参照
         bgmRef.current = new Audio("/sounds/storysetting.mp3")
         bgmRef.current.loop = true
         bgmRef.current.volume = 0.5
@@ -136,7 +143,6 @@ export default function CharacterSetup() {
 
         document.addEventListener("click", playBGM)
 
-        // コンポーネントのアンマウント時にBGMを停止
         return () => {
           document.removeEventListener("click", playBGM)
           if (bgmRef.current) {
@@ -160,8 +166,8 @@ export default function CharacterSetup() {
     })
   }
 
-  // 次のステップに進む
-  const goToNextStep = () => {
+  // 次のステップに進む処理（useCallback で安定化）
+  const goToNextStep = useCallback(() => {
     setIsTransitioning(true)
     console.log("効果音再生: 選択完了")
 
@@ -203,7 +209,7 @@ export default function CharacterSetup() {
       }
       setIsTransitioning(false)
     }, 500)
-  }
+  }, [currentStep, router])
 
   // 選択肢を保存する（モック実装）
   const saveSelection = (step: SetupStep) => {
@@ -213,7 +219,7 @@ export default function CharacterSetup() {
     )
   }
 
-  // 次へボタンが有効かどうか
+  // 次へボタンの有効性判定
   const isNextButtonEnabled = () => {
     switch (currentStep) {
       case "job":
@@ -229,7 +235,7 @@ export default function CharacterSetup() {
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-gradient-to-b from-blue-950 to-blue-900 flex flex-col items-center justify-center">
-      {/* 背景の星（クライアントマウント後のみ描画） */}
+      {/* 背景の星 */}
       <RandomStars />
 
       {/* 落下装飾 */}
@@ -273,7 +279,12 @@ export default function CharacterSetup() {
               className="relative"
             >
               <div className="w-32 h-32 md:w-40 md:h-40 bg-yellow-200 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
-                <img src="/images/cow-fairy.webp" alt="モーちゃん" className="w-full h-full object-cover" />
+                <Image
+                  src="/images/cow-fairy.webp"
+                  alt="モーちゃん"
+                  layout="fill"
+                  objectFit="cover"
+                />
               </div>
               <div className="mt-2 text-center text-white font-medium">
                 <span className="bg-yellow-600/70 px-3 py-1 rounded-full text-sm">モーちゃん</span>
@@ -492,21 +503,19 @@ export default function CharacterSetup() {
           0% { opacity: 0.1; }
           100% { opacity: 0.7; }
         }
-        
         @keyframes falling {
-          0% { 
-            transform: translateY(-10px) rotate(0deg); 
+          0% {
+            transform: translateY(-10px) rotate(0deg);
             opacity: 0;
           }
           10% {
             opacity: 1;
           }
-          100% { 
-            transform: translateY(100vh) rotate(360deg); 
+          100% {
+            transform: translateY(100vh) rotate(360deg);
             opacity: 0.7;
           }
         }
-        
         .animate-falling {
           animation: falling linear forwards;
         }
