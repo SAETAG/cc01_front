@@ -230,6 +230,22 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     setCurrentScene("prologue")
   }
 
+  // 冒険の準備を始める - シンプル化したハンドラー
+  const startAdventure = () => {
+    // BGMのフェードアウトを簡略化
+    if (bgmRef.current) {
+      bgmRef.current.volume = 0.1
+      bgmRef.current.pause()
+      bgmRef.current = null
+    }
+
+    // コールバックがあれば実行
+    if (onComplete) onComplete()
+
+    // 次のページへ遷移
+    router.push("/charaset")
+  }
+
   // 背景色設定
   const getBackgroundColor = () => {
     switch (currentScene) {
@@ -364,9 +380,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
             transition={{ duration: 1 }}
           >
             <div className="relative mb-6 sm:mb-8 w-full flex justify-center">
-              {/* ★ 修正箇所: pointer-events-none を追加 */}
               <div className="pointer-events-none absolute inset-0 bg-blue-900/50 rounded-lg backdrop-blur-sm"></div>
-              {/* ↑ これで透明オーバーレイがタップを拾わなくなる */}
               <motion.div
                 className="relative z-10 mt-4"
                 animate={{
@@ -379,7 +393,6 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
                   ease: "easeInOut",
                 }}
               >
-                {/* 画像の親要素に relative を追加 */}
                 <div className="relative w-28 h-28 sm:w-40 sm:h-40 bg-yellow-200 rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg flex items-center justify-center">
                   <Image src="/images/cow-fairy.webp" alt="片づけの妖精：モーちゃん" layout="fill" objectFit="cover" />
                 </div>
@@ -432,7 +445,7 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
         {currentScene === "complete" && (
           <motion.div
             key="complete"
-            className="text-center px-4 py-10"
+            className="text-center px-4 py-10 z-10 relative"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -441,30 +454,13 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
               プロローグ完了
             </h1>
             <p className="text-white mb-6 sm:mb-8 text-base sm:text-lg">冒険の準備を始めましょう</p>
+            {/* モバイル対応のためにボタンを改良 */}
             <button
-              onClick={() => {
-                if (bgmRef.current) {
-                  const fadeOut = setInterval(() => {
-                    if (bgmRef.current && bgmRef.current.volume > 0.05) {
-                      bgmRef.current.volume -= 0.05
-                    } else {
-                      clearInterval(fadeOut)
-                      if (bgmRef.current) {
-                        bgmRef.current.pause()
-                        bgmRef.current = null
-                      }
-                      if (onComplete) onComplete()
-                      router.push("/charaset")
-                    }
-                  }, 100)
-                } else {
-                  if (onComplete) onComplete()
-                  router.push("/charaset")
-                }
-              }}
-              className="bg-green-600 hover:bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full text-base sm:text-lg shadow-lg"
+              onClick={startAdventure}
+              className="bg-green-600 hover:bg-green-500 active:bg-green-700 text-white px-6 sm:px-8 py-4 sm:py-5 rounded-full text-base sm:text-lg shadow-lg transform active:scale-95 transition-transform touch-manipulation relative z-20"
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              冒険の準備を始める <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+              冒険の準備を始める <ArrowRight className="ml-2 inline-block h-4 w-4 sm:h-5 sm:w-5" />
             </button>
           </motion.div>
         )}
