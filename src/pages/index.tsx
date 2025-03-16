@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // ✅ useRouter をインポート
 import { Button } from "@/components/ui/button";
 
 interface FloatingObject {
@@ -18,6 +19,8 @@ export default function RPGTitleScreen() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [floatingObjects, setFloatingObjects] = useState<FloatingObject[]>([]);
+
+  const router = useRouter(); // ✅ useRouter フックを追加
 
   useEffect(() => {
     setIsLoaded(true);
@@ -91,6 +94,7 @@ export default function RPGTitleScreen() {
             className={`w-64 py-6 text-lg bg-emerald-800 border-2 border-emerald-400 hover:bg-emerald-700 text-white rounded-lg transition-all duration-300 ${
               hoveredButton === "new" ? "scale-105 shadow-[0_0_15px_rgba(52,211,153,0.5)]" : ""
             }`}
+            onClick={() => router.push("/signup")} // ✅ `新たな冒険へ` → `/login` に遷移
             onMouseEnter={() => setHoveredButton("new")}
             onMouseLeave={() => setHoveredButton(null)}
           >
@@ -101,6 +105,7 @@ export default function RPGTitleScreen() {
             className={`w-64 py-6 text-lg bg-emerald-800 border-2 border-emerald-400 hover:bg-emerald-700 text-white rounded-lg transition-all duration-300 ${
               hoveredButton === "continue" ? "scale-105 shadow-[0_0_15px_rgba(52,211,153,0.5)]" : ""
             }`}
+            onClick={() => router.push("/login")} // ✅ `冒険の続きへ` → `/signup` に遷移
             onMouseEnter={() => setHoveredButton("continue")}
             onMouseLeave={() => setHoveredButton(null)}
           >

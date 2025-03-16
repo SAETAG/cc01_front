@@ -79,7 +79,7 @@ export default function SignupScreen() {
     }
 
     if (!name.trim()) {
-      newErrors.name = "名前を入力してください"
+      newErrors.name = "名前（プレイネーム）を入力してください"
       valid = false
     }
 
@@ -172,7 +172,7 @@ export default function SignupScreen() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-white">
-              名前
+              名前（プレイネーム）
             </Label>
             <Input
               id="name"
@@ -182,7 +182,7 @@ export default function SignupScreen() {
               className={`bg-emerald-700/50 border-emerald-500 text-white placeholder:text-emerald-300/50 ${
                 errors.name ? "border-red-400" : ""
               }`}
-              placeholder="あなたの名前"
+              placeholder="あなたの名前（プレイネーム）"
             />
             {errors.name && <p className="text-red-300 text-xs mt-1">{errors.name}</p>}
           </div>
