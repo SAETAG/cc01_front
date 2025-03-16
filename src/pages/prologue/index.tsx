@@ -42,10 +42,10 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
     "しかし、ある日、突如として現れた『混沌の呪い』が王国に暗い影を落としました。\n棚は乱れ、衣装は迷宮のごとく入り組み、かつての秩序は音を立てて崩れ去っていきました。"
 
   const npcDialogue =
-    "勇者よ、あなたにのみ託された使命がある。\n散らかり果てた王国に再び秩序をもたらし、失われた美しさを取り戻すのです。\n各ダンジョンには、かの邪悪なボスが待ち受けています。\n『片方見つからないソックスライム』、そして『リバウンドラゴン』…彼らを打ち倒し、再び平和とか輝きに満ちたクローゼット王国を取り戻すのです！"
+    "勇者よ、あなたにのみ託された使命がある。\n散らかり果てた王国に再び秩序をもたらし、失われた美しさを取り戻すのです。\n『片方見つからないソックスライム』、そして『リバウンドラゴン』…彼らを打ち倒し、再び平和と輝きに満ちたクローゼットを取り戻すのです！"
 
   const adventureText =
-    "冒険の始まり：\n\nここからあなたは、自らの『職業』を選び、断捨離の剣士、空間デザインの魔法使い、または時短の錬金術師として、各エリアに潜む混沌を一掃するための旅に出ます。\n初めは小さなクエストから始まり、ひとつひとつの達成があなたを強くします。\nそしてクローゼット王国が再び輝きを取り戻すまさにその時、あなたは国を統治する偉大な王になるのです。\n\nさぁ、行ってらっしゃい！"
+    "冒険の始まり：\n\nここからあなたは、自らの『職業』を選び、断捨離の剣士、空間デザインの魔法使い、または時短の錬金術師として、各エリアに潜む混沌を一掃するための旅に出ます。\n初めは小さなクエストから始まり、ひとつひとつの達成があなたを強くします。\nそしてクローゼット王国が再び輝きを取り戻すまさにその時、あなたは国を統治する偉大な王になるのです。\n\nさぁ選ばれし勇者よ、行ってらっしゃい！"
 
   // 効果音再生関数（isMuted, audioEnabled に依存）
   const playSound = useCallback(
@@ -383,7 +383,9 @@ export default function PrologueScene({ onComplete }: { onComplete?: () => void 
             transition={{ duration: 1 }}
           >
             <div className="relative mb-8 w-full flex justify-center">
-              <div className="absolute inset-0 bg-blue-900/50 rounded-lg backdrop-blur-sm"></div>
+              {/* ★ 修正箇所: pointer-events-none を追加 */}
+              <div className="pointer-events-none absolute inset-0 bg-blue-900/50 rounded-lg backdrop-blur-sm"></div>
+              {/* ↑ これで透明オーバーレイがタップを拾わなくなる */}
               <motion.div
                 className="relative z-10 mt-4"
                 animate={{
